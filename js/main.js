@@ -1,17 +1,10 @@
+// Se le da la bienvenida al usuario. Explicando el funcionamiento
 alert(
   "Bienvenido. Estás por reservar un turno de Padel. Presiona 'Aceptar' para continuar."
 );
 
-let nombre = prompt("Ingrese su nombre: ");
-if (!nombre) {
-  nombre = "Usuario";
-}
-alert(
-  "Hola " +
-    nombre +
-    ".\n\nA continuación se te mostrarán las 5 próximas fechas disponibles.\nHaz clic en 'Aceptar' para elegir una de ellas."
-);
-
+//Arrays y funciones globales
+//Fechas disponibles
 const fechasDisponibles = [
   "01/04/2025",
   "02/04/2025",
@@ -19,15 +12,7 @@ const fechasDisponibles = [
   "04/04/2025",
   "05/04/2025",
 ];
-const fechaSeleccionada = [];
-for (let fecha of fechasDisponibles) {
-  if (confirm("¿Quieres seleccionar esta fecha?\n\n" + fecha)) {
-    fechaSeleccionada.push(fecha);
-    break;
-  }
-}
-alert("La fecha seleccionada es: " + fechaSeleccionada);
-
+//Horarios del club (08 a 23hs)
 const horariosDisponibles = [
   "08:00",
   "08:30",
@@ -61,64 +46,118 @@ const horariosDisponibles = [
   "22:30",
   "23:00",
 ];
-let horarioSeleccionado = prompt(
-  "Por favor, ingresa un horario disponible para tu reserva.\nFormato: HH:MM (ejemplo: 08:00, 08:30, ... hasta las 22:30).\nRecuerda que, aunque el último turno inicia a las 22:30, la reserva debe terminar a más tardar a las 23:00."
-);
-while (!horariosDisponibles.includes(horarioSeleccionado)) {
-  alert(
-    "El horario seleccionado no está disponible. Por favor, elige uno de los horarios disponibles."
-  );
-  horarioSeleccionado = prompt(
-    "ERROR\nIngresa un horario válido para tu reserva.\nFormato: HH:MM (ejemplo: 08:00, 08:30, ... hasta las 22:30).\nRecuerda que, aunque el último turno inicia a las 22:30, la reserva debe terminar a más tardar a las 23:00."
-  );
+//Historial de reservas
+const historialDeReservas = [];
+//Historial de reservas. Agrega la reserva al array del historial de reservas.
+function registrarReservaenHistorial(reserva) {
+  historialDeReservas.push(reserva);
+  alert("Reserva registrada en el historial.");
+}
+//Muestra al usuario todas las reservas que ha ido realizando hasta que salga del ciclo.
+function mostrarHistorialDeReservas() {
+  if (historialDeReservas.length === 0) {
+    alert("No hay reservas registradas en el historial.");
+  } else {
+    let historial = "Historial de Reservas:\n\n";
+    for (let i = 0; i < historialDeReservas.length; i++) {
+      let reserva = historialDeReservas[i];
+      historial += `Reserva ${i + 1}: ${reserva.nombre} - ${
+        reserva.fechaDeLaReserva
+      } - ${reserva.horarioDeLaReserva}\n\n`;
+    }
+    alert(historial);
+  }
 }
 
-let tiempoMaximoDeJuego = 180;
-let tiempoDeJuego;
-do {
-  let entrada = prompt(
-    "Ingresa la duración de tu reserva en minutos (múltiplos de 30).\nEjemplo: 30, 60, 90... hasta 180."
+//Ingresa su nombre. En caso de que no inserte nada, el nombre por defecto será "Usuario".
+//Se le agregó un ciclo while para que pueda incorporar varios registros en un historial. Aún no comprueban si ocupan esos lugares.
+let otraReserva = true;
+while (otraReserva) {
+  let nombre = prompt("Ingrese su nombre: ");
+  if (!nombre) {
+    nombre = "Usuario";
+  }
+  alert(
+    "Hola " +
+      nombre +
+      ".\n\nA continuación se te mostrarán las 5 próximas fechas disponibles.\nHaz clic en 'Aceptar' para elegir una de ellas."
   );
-  if (entrada === null) break;
-  tiempoDeJuego = parseInt(entrada);
-} while (
-  isNaN(tiempoDeJuego) ||
-  tiempoDeJuego % 30 !== 0 ||
-  tiempoDeJuego < 30 ||
-  tiempoDeJuego > tiempoMaximoDeJuego
-);
 
-let horarioFinal;
+  //El usuario decidirá dando en aceptar a la fecha disponible.
+  const fechaSeleccionada = [];
+  for (let fecha of fechasDisponibles) {
+    if (confirm("¿Quieres seleccionar esta fecha?\n\n" + fecha)) {
+      fechaSeleccionada.push(fecha);
+      break;
+    }
+  }
+  alert("La fecha seleccionada es: " + fechaSeleccionada);
 
-if (horariosDisponibles.includes(horarioSeleccionado)) {
-  const horarioInicio = horariosDisponibles.indexOf(horarioSeleccionado);
-  const intervaloDeHorario = parseInt(tiempoDeJuego / 30);
-  const horarioFinalCalculo = horarioInicio + intervaloDeHorario;
-
-  if (horarioFinalCalculo < horariosDisponibles.length) {
-    horarioFinal = horariosDisponibles[horarioFinalCalculo];
-    alert(`Tu turno es de ${horarioSeleccionado} a ${horarioFinal}`);
-  } else {
+  //Debe ingresar la hora HH:MM en bloques de 30min.
+  let horarioSeleccionado = prompt(
+    "Por favor, ingresa un horario disponible para tu reserva.\nFormato: HH:MM (ejemplo: 08:00, 08:30, ... hasta las 22:30).\nRecuerda que, aunque el último turno inicia a las 22:30, la reserva debe terminar a más tardar a las 23:00."
+  );
+  while (!horariosDisponibles.includes(horarioSeleccionado)) {
     alert(
-      "El tiempo de juego seleccionado excede el horario disponible del Club."
+      "El horario seleccionado no está disponible. Por favor, elige uno de los horarios disponibles."
+    );
+    horarioSeleccionado = prompt(
+      "ERROR\nIngresa un horario válido para tu reserva.\nFormato: HH:MM (ejemplo: 08:00, 08:30, ... hasta las 22:30).\nRecuerda que, aunque el último turno inicia a las 22:30, la reserva debe terminar a más tardar a las 23:00."
     );
   }
-} else {
-  alert("Lo sentimos. El horario seleccionado no está disponible.");
+
+  //Declara el tiempo de juego. Que va desde los 30min hasta los 180min como máximo. En bloques de 30.
+  let tiempoMaximoDelTurno = 180;
+  let tiempoDelTurno;
+  do {
+    let entrada = prompt(
+      "Ingresa la duración de tu reserva en minutos (múltiplos de 30).\nEjemplo: 30, 60, 90... hasta 180."
+    );
+    if (entrada === null) break;
+    tiempoDelTurno = parseInt(entrada);
+  } while (
+    isNaN(tiempoDelTurno) ||
+    tiempoDelTurno % 30 !== 0 ||
+    tiempoDelTurno < 30 ||
+    tiempoDelTurno > tiempoMaximoDelTurno
+  );
+
+  //Calcula si el horario entra dentro de los valores del Array de los horarios del club.
+  let horarioFinal;
+  if (horariosDisponibles.includes(horarioSeleccionado)) {
+    const horarioInicio = horariosDisponibles.indexOf(horarioSeleccionado);
+    const intervaloDeHorario = parseInt(tiempoDelTurno / 30);
+    const horarioFinalCalculo = horarioInicio + intervaloDeHorario;
+    if (horarioFinalCalculo < horariosDisponibles.length) {
+      horarioFinal = horariosDisponibles[horarioFinalCalculo];
+      alert(`Tu turno es de ${horarioSeleccionado} a ${horarioFinal}`);
+    } else {
+      alert(
+        "El tiempo de juego seleccionado excede el horario disponible del Club."
+      );
+    }
+  } else {
+    alert("Lo sentimos. El horario seleccionado no está disponible.");
+  }
+
+  //Crea un objeto con los datos de la reserva. Los comunica a todos: nombre, fecha y horarios.
+  const reserva = {
+    nombre: nombre,
+    fechaDeLaReserva: fechaSeleccionada.length
+      ? fechaSeleccionada[0]
+      : "Fecha no seleccionada.",
+    horarioDeLaReserva: horarioFinal
+      ? horarioSeleccionado + " a " + horarioFinal
+      : "Horario no seleccionado.",
+  };
+  alert(`Datos de la reserva:
+Nombre: ${reserva.nombre}
+Fecha de la reserva: ${reserva.fechaDeLaReserva}
+Horario de la reserva: ${reserva.horarioDeLaReserva}`);
+
+  registrarReservaenHistorial(reserva);
+  mostrarHistorialDeReservas();
+
+  otraReserva = confirm("¿Quieres realizar otra reserva?");
 }
-
-const reserva = {
-  Nombre: nombre,
-  FechaDeLaReserva: fechaSeleccionada.length
-    ? fechaSeleccionada[0]
-    : "Fecha no seleccionada.",
-  HorarioDeLaReserva: horarioFinal
-    ? horarioSeleccionado + " a " + horarioFinal
-    : "Horario no seleccionado.",
-};
-
-alert(`Reserva confirmada:
-Nombre: ${reserva.Nombre}
-Fecha de la reserva: ${reserva.FechaDeLaReserva}
-Horario de la reserva: ${reserva.HorarioDeLaReserva}
-¡Te esperamos!`);
+alert("Fin de la gestión de reservas.");
